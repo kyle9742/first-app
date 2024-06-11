@@ -1,14 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function App() {
     // JS 부분
-    const [pets, setPets] = useState([
-        { name: "줄리아", species: "cat", age: "5", id: 123456789 },
-        { name: "라이언", species: "dog", age: "3", id: 987654321 },
-        { name: "플로피", species: "rabbit", age: "2", id: 123123123 },
-        { name: "길동", species: "cat", age: "1", id: 456456456 },
-        { name: "진도", species: "dog", age: "6", id: 789789789 },
-    ]);
+    const [pets, setPets] = useState(JSON.parse(localStorage.getItem("PetData")));
+     // 처음 한번
+    // useEffect(실행함수, [])
+    // useEffect(() => {
+    //     if(localStorage.getItem("PetData")) {
+    //         setPets(JSON.parse(localStorage.getItem("PetData")));
+    //     }
+    // }, []);
+    // pets 데이터가 수정될때마다 실행
+    useEffect(() => {
+        localStorage.setItem("PetData", JSON.stringify(pets));
+    }, [pets]);
+    // useEffect(실행함수, [pets])
 
     return (
         <div>
@@ -26,7 +32,7 @@ function App() {
             <h1>배열 만들어 데이터 가져오기</h1>
             <ul>
                 {pets.map((pet) => {
-                    return <Pet key={pet.id} name={pet.name} species={pet.species} age={pet.age} />;
+                    return <Pet setPets={setPets} id={pet.id} name={pet.name} species={pet.species} age={pet.age} />;
                 })}
             </ul>
             <hr />
@@ -61,8 +67,9 @@ function Footer(props) {
 }
 function Pet(props) {
     function handleDelete() {
-        alert("삭제버튼 클릭! 키값은 : " + props.id);
-    //    props.setPets(prev => prev.filter(pet => pet.id !== props.key));
+        // alert("삭제버튼 클릭! 키값은 : " + props.id);
+        // filter 메소드로 펫의 id값이 다를 경우에만 남긴다. (id값으로 삭제)
+       props.setPets(prev => prev.filter((pet) => pet.id !== props.id));
     }
     return (
         <li>
@@ -71,8 +78,12 @@ function Pet(props) {
         </li>
     );
 }
+
 function LikeArea() {
-    const [likeCount, setLikeCount] = useState(0);
+    const [likeCount, setLikeCount] = useState(JSON.parse(localStorage.getItem("LikeCount")));
+    useEffect(() => {
+        localStorage.setItem("LikeCount", JSON.stringify(likeCount));
+    }, [likeCount]);
 
     function upLike() {
         setLikeCount((prev) => prev + 1);
